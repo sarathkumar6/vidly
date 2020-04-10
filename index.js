@@ -13,6 +13,7 @@ const addGenres = require('./routes/addGenres');
 const deleteGenres = require('./routes/deleteGenres');
 const updateGenres = require('./routes/updateGenres');
 const vidlyApp = new express();
+const genres = require('./routes/genresRoutes');
 const vidly = new Genre(_.cloneDeep(defaultGenres));
 
 function updateCollection(genresCollection) {
@@ -21,8 +22,10 @@ function updateCollection(genresCollection) {
 // Adding a piece of middleware to request pip=eline to grab the request body
 vidlyApp.use(express.json());
 
+vidlyApp.use('/api/vidly/genres', genres);
+
 // Route to get a genre
-vidlyApp.get('/api/vidly/genres/:id', (request, response) => getGenres(request, response, vidly.getGenres()));
+/* vidlyApp.get('/api/vidly/genres/:id', (request, response) => getGenres(request, response, vidly.getGenres()));
 
 // Route to add a genre
 vidlyApp.post('/api/vidly/genres', (request, response) => addGenres(request, response, vidly.getGenres(), updateCollection));    
@@ -31,9 +34,9 @@ vidlyApp.post('/api/vidly/genres', (request, response) => addGenres(request, res
 vidlyApp.delete('/api/vidly/genres/:id', (request, response) => deleteGenres(request, response, vidly.getGenres(), updateCollection));
 
 // Route to update a genre
-vidlyApp.put('/api/vidly/genres', (request, response) => updateGenres(request, response, vidly.getGenres(), updateCollection));
+vidlyApp.put('/api/vidly/genres', (request, response) => updateGenres(request, response, vidly.getGenres(), updateCollection)); */
 
 
-vidlyApp.listen(2000, () => console.log('Listening to port 2000'));
+vidlyApp.listen(6000, () => console.log('Listening to port 6000'));
 
 // 
