@@ -1,0 +1,42 @@
+[
+    {
+        "genreType" : "Action",
+        "genreId": "Act",
+        "movies": ["Mission Impossible IV", "Marvel Comics", "Fast and Furious"]
+    },
+    {
+        "genreType": "Adventure",
+        "genreId": "Adv",
+        "movies": ["Captain Blood", "The Adventures of Robin Hood", "The Mark of Zorro"]
+    },
+    {
+        "genreType": "Comedy",
+        "genreId": "Com",
+        "movies": ["Spy", "Brides Maid", "Game Night"]
+    },
+    {
+        "genreType": "Drama",
+        "genreId": "Dra",
+        "movies": ["Spotlight", "Little Women", "Roma"]
+    },
+    {
+        "genreType": "Crime",
+        "genreId": "Cri",
+        "movies": ["Gone Girl", "Nightcrawler", "Ozark"]
+    },
+    {
+        "genreType": "Fantasy",
+        "genreId": "Fan",
+        "movies": ["Harry Potter", "John Kendrick Bangs", "Green Mile"]
+    },
+    {
+        "genreType": "Historical",
+        "genreId": "His",
+        "movies": ["Lincoln", "300", "Achillies"]
+    },
+    {
+        "genreType": "Political",
+        "genreId": "Pol",
+        "movies": ["Lincoln", "Candide", "Uncle Tom's Cabin"]
+    }
+]
