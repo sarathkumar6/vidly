@@ -1,103 +1,89 @@
-const _ = require('lodash');
-const express = require('express');
+const _ = require("lodash");
+const express = require("express");
 const router = express.Router();
-const Joi = require('@hapi/joi');
-const genresCollection = require('../genreConstants');
-const defaultGenres = require('../genreConstants');
-const Genre = require('../genres');
-const vidly = new Genre(_.cloneDeep(defaultGenres));
+const mongoose = require("mongoose");
+const Genre = mongoose.model(
+  "Genre",
+  new mongoose.Schema({
+    genreId: String,
+    genreType: String,
+    movies: Array
+  })
+);
+const Joi = require("@hapi/joi");
 const addGenresSchema = Joi.object({
-    genreType: Joi.string().min(3).required(),
-    movies: Joi.array().min(2).required()
+  genreType: Joi.string()
+    .min(3)
+    .required(),
+  movies: Joi.array()
+    .min(2)
+    .required()
 });
 const updateSchema = Joi.object({
-    genreType: Joi.string().min(3).required(),
-    genreId: Joi.string().min(3).required(),
-    movies: Joi.array().min(2).required()
+  genreType: Joi.string()
+    .min(3)
+    .required(),
+  genreId: Joi.string()
+    .min(3)
+    .required(),
+  movies: Joi.array()
+    .min(2)
+    .required()
 });
 
-function updateCollection(genresCollection) {
-    vidly.setGenres(genresCollection);
-    console.log('Updated Collection: ', vidly.getGenres());
-}
-
-function findTheGenre(genresCollection, id) {
-    return _.find(genresCollection, (genre)=> {
-        return _.isEqual(genre.genreId, id);
+// Get all the genres
+router.get("/", async (request, response) => {
+  const genres = await Genre.find().sort("name");
+  copyOfGenres = _.cloneDeep(genres);
+  response.send(genres);
+});
+// Get a specific genre
+router.get("/:id", async (request, response) => {
+  const getTheGenre = await Genre.findOne({genreId: request.params.id});
+  return getTheGenre? response.send(getTheGenre) : response.status(404).send("The genre id is not found");
+});
+// Add a genre
+router.post("/", async (request, response) => {
+  try {
+    addGenresSchema.validate(request.body);
+    let addGenre = new Genre({
+      genreType: request.body.genreType,
+      genreId: _.capitalize(request.body.genreType.substr(0, 3)),
+      movies: request.body.movies
     });
-}
-
-function hasTheGenrePost(genresCollection, genreType) {
-    return _.findIndex(genresCollection, (genre) => {
-        console.log(genreType);
-        return _.isEqual(genre.genreId, _.capitalize(genreType.substr(0, 3)));
-    })
-}
-
-function hasTheGenre(genresCollection, genreId) {
-    return _.findIndex(genresCollection, (genre) => {
-        console.log(genre);
-        return _.isEqual(genre.genreId, genreId);
-    })
-}
-
-function removeTheGenre(genresCollection, id) {
-    return _.remove(genresCollection, (genre) => {
-        return !_.isEqual(genre.genreId, id);
+    addGenre = await addGenre.save();
+    response.send(addGenre);
+  } catch (error) {
+    return response.status(400).send(error.message);
+  }
+});
+// Update a Genre
+router.put("/", async (request, response) => {
+    // Useful doc: https://masteringjs.io/tutorials/mongoose/update
+  try {
+    updateSchema.validate(request.body);
+    const getTheGenre = await Genre.findOne({genreId: _.capitalize(request.body.genreType.substr(0, 3))});
+    await getTheGenre.updateOne({
+      genreType: request.body.genreType,
+      movies: request.body.movies
     });
-}
-
-router.get('/:id',(request, response) => {
-    const genreId = request.params.id;
-    const genre = findTheGenre(vidly.getGenres(), genreId)
-    return genre ? response.send(genre) : response.status(404).send('The genre id is not found');
+    const updatedGenre = await Genre.findOne({genreId: _.capitalize(request.body.genreType.substr(0, 3))});
+    response.send(updatedGenre);
+  } catch (error) {
+    return response.status(400).send(error.message);
+  }
 });
-
-
-router.post('/',(request, response) => {
-    const addGenresValidation = addGenresSchema.validate(request.body);
-    const genreType = request.body.genreType;
-    const genreAlreadyExists = hasTheGenrePost(genresCollection, genreType);
-    if (!addGenresValidation.error && genreAlreadyExists < 0) {
-        const cloneGenresCollection = _.cloneDeep(genresCollection);
-        const genre = request.body;
-        genre.genreId = _.capitalize(genreType.substr(0, 3));
-        cloneGenresCollection.push(genre);
-        updateCollection(cloneGenresCollection);
-        return response.send(cloneGenresCollection[cloneGenresCollection.length -1]);
-    } else {
-        return response.status(400).send(genreAlreadyExists > 0 ? addGenresValidation.error : 'Genre Already Exists');
-    }
-});
-
-
-router.put('/', (request, response) => {
-    const validateGenre = updateSchema.validate(request.body);
-    const genresCollection = vidly.getGenres();
-    const genreExist = hasTheGenre(genresCollection, request.body.genreId);
-    if (!validateGenre.error && _.gte(genreExist, 0)) {
-        const cloneGenresCollection = _.cloneDeep(genresCollection);
-        const genre = request.body;
-        cloneGenresCollection[genreExist] = genre;
-        updateCollection(cloneGenresCollection);
-        return response.send(cloneGenresCollection[genreExist]);
-    } else response.status(400).send('Something fucked up');
-    
-});
-
-router.delete("/:id", (request, response) => {
-  const genreId = request.params.id;
-  const genresCollection = vidly.getGenres();
-  const genre = findTheGenre(genresCollection, genreId);
-  if (genre) {
-    const updatedGenresCollection = removeTheGenre(
-      _.cloneDeep(genresCollection),
-      genreId
-    );
-    updateCollection(updatedGenresCollection);
-    response.send(genre);
-  } else {
-    response.status(404).send("The genre id is not found");
+// Delete a Genre
+router.delete("/:id", async (request, response) => {
+  try {
+    await Genre.deleteOne({
+      genreId: request.params.id
+    }, function callBack(err, result) {
+        if (result) response.send(result);
+        else if (err) new Error('Deleting a genre failed', err);
+    });
+  } catch (error) {
+    return response.status(400).send(error.message);
   }
 });
 
