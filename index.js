@@ -7,6 +7,7 @@ const _ = require('lodash');
 const express = require('express');
 const vidlyApp = new express();
 const genres = require('./routes/genresRoutes');
+const customers = require('./routes/customersRoutes');
 
 const mongoose = require('mongoose');
 mongoose
@@ -14,9 +15,10 @@ mongoose
     .then(() => console.log('Connection established with vidly'))
     .catch((error) => console.log('Connection to playgound failed', error));
 
-// Adding a piece of middleware to request pip=eline to grab the request body
+// Adding a piece of middleware to request pipeline to grab the request body
 vidlyApp.use(express.json());
 
 vidlyApp.use('/api/vidly/genres', genres);
+vidlyApp.use('/api/vidly/customers', customers);
 
 vidlyApp.listen(6000, () => console.log('Listening to port 6000'));
