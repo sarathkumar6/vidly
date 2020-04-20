@@ -1,0 +1,6 @@
+{"metadata":{},"level":"error","message":"Retrieving genres failed","timestamp":"2020-04-20T00:13:39.058Z"}
+{"metadata":{"name":"MongoTimeoutError","reason":{"name":"MongoNetworkError"}},"level":"error","message":"failed to reconnect after 30 attempts with interval 1000 ms","timestamp":"2020-04-20T00:14:07.184Z"}
+{"message":"Connection established with vidly","level":"info","timestamp":"2020-04-20T00:15:46.142Z"}
+{"message":"Connection established with vidly","level":"info","timestamp":"2020-04-20T00:17:35.115Z"}
+{"message":"Connection established with vidly","level":"info","timestamp":"2020-04-20T00:18:03.458Z"}
+{"message":"Connection established with vidly","level":"info","timestamp":"2020-04-20T00:18:45.105Z"}
