@@ -1,9 +1,7 @@
 const _ = require("lodash");
 const express = require("express");
 const router = express.Router();
-const mongoose = require("mongoose");
-const customerSchema = require('../models/customer');
-const Customer = mongoose.model("Customer", customerSchema);
+const { Customer} = require('../models/customer');
  /*
   ToDo: Add API Validations using Joi 
   Link about Mongoose Schem Type properties: 
