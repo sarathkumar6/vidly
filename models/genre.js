@@ -1,12 +1,10 @@
 const mongoose = require("mongoose");
-const Genre = mongoose.model(
-  "Genre",
-  new mongoose.Schema({
-    genreId: String,
-    genreType: String,
-    movies: Array
-  })
-);
+const genreSchema =  new mongoose.Schema({
+  genreId: String,
+  genreType: String,
+  movies: Array
+});
+const Genre = mongoose.model("Genre", genreSchema);
 const Joi = require("@hapi/joi");
 const addGenresSchema = Joi.object({
   genreType: Joi.string()
@@ -29,5 +27,6 @@ const updateSchema = Joi.object({
 });
 
 exports.Genre = Genre;
+exports.genreSchema = genreSchema;
 exports.addGenresSchema = addGenresSchema;
 exports.updateSchema = updateSchema;
