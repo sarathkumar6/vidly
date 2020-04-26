@@ -4,16 +4,19 @@ const router = express.Router();
 const { Genre, addGenresSchema, updateSchema } = require("../models/genre");
 const auth = require("../middleware/auth");
 const admin = require("../middleware/admin");
-const asyncMiddleware = require("../middleware/asyncMiddleware");
 
 // Get all the genres
 router.get("/", async (request, response, next) => {
-  throw new Error('Retrieving genres failed');
+  //throw new Error('Retrieving genres failed');
   const genres = await Genre.find().sort("name");
   return response.send(genres);
 });
 // Get a specific genre
 router.get("/:id", async (request, response) => {
+  // ToDo: extract the params id check to middleware
+  if (!_.eq(request.params.id.length, 3)) {
+    return response.status(404).send("Invalid Genre Id");
+  }
   const getTheGenre = await Genre.findOne({ genreId: request.params.id });
   return getTheGenre
     ? response.send(getTheGenre)
@@ -22,7 +25,10 @@ router.get("/:id", async (request, response) => {
 // Add a genre
 router.post("/", auth, async (request, response) => {
   try {
-    addGenresSchema.validate(request.body);
+    const validateRequest = addGenresSchema.validate(request.body);
+    if (validateRequest.error) 
+      return response.status(400).send(validateRequest.error.details[0].message);
+
     let addGenre = new Genre({
       genreType: request.body.genreType,
       genreId: _.capitalize(request.body.genreType.substr(0, 3)),

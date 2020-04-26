@@ -9,7 +9,6 @@ function auth(request, response, next) {
 
   try {
     request.user = jwt.verify(token, config.get("jwtPrivateKey"));
-    console.log('Authorised user');
     next();
   } catch (error) {
     return response.status(400).send("Invalid token.");
