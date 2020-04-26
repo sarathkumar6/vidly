@@ -1,6 +1,6 @@
-require("winston-mongodb");
-require("express-async-errors");
 const winston = require("winston");
+require("winston-mongodb"); // Does this prevent from running integration test???
+require("express-async-errors");
 
 function startUpLogging() {
   process.on("uncaughtException", error => {
@@ -9,18 +9,20 @@ function startUpLogging() {
   });
 
   process.on("unhandledRejection", error => {
-    winston.error(error.message, { metadata: error });
+    winston.winston.error(error.message, { metadata: error });
     process.exit(1);
   });
   // Just to print on the console
-  winston.add(
+  /* winston.add(
     new winston.transports.Console({
       format: winston.format.combine(
         winston.format.timestamp(),
         winston.format.json()
-      )
+      ),
+      coloriz: true,
+      prettyPrint: true
     })
-  );
+  ); */
   winston.add(
     new winston.transports.File({
       filename: "logfile.log",
@@ -30,7 +32,7 @@ function startUpLogging() {
       )
     })
   );
-
+// Does this prevent from running integration test???
   winston.add(
     new winston.transports.MongoDB({
       db: "mongodb://localhost/vidly",
